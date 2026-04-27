@@ -1,4 +1,4 @@
-name: Listing S3 Buckets
+name: Create a S3 Bucket
 
 on:
   push:
@@ -9,14 +9,38 @@ permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read    # This is required for actions/checkout
 jobs:
-  Listing_Buckets:
+  creating_bucket:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
           role-to-assume: ${{ secrets.IAM_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Plan Execution
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+        run: |
+          terraform plan \
+            -var="bucket_name=$BUCKET_NAME"
+        working-directory: terraform
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_bucket_name: ${{ secrets.BUCKET_NAME }}
+        run: terraform apply -auto-approve
+        working-directory: terraform
 
       - name: List S3 Buckets
         env:
