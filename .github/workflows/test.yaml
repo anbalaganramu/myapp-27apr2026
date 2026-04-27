@@ -22,5 +22,5 @@ jobs:
         env:
           aws-region: ${{ secrets.AWS_REGION }}
         run: |
-          echo: "Listing S3 buckets:"
+          echo "Listing S3 buckets:"
           aws s3 ls
