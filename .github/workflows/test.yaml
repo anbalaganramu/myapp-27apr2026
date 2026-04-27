@@ -48,3 +48,8 @@ jobs:
         run: |
           echo "Listing S3 buckets:"
           aws s3 ls
+      - name: Uploading files to S3 Bucket
+        run: |
+          aws s3 cp index.html s3://${{ secrets.BUCKET_NAME }}/index.html
+          aws s3 cp --recursive images/ s3://${{ secrets.BUCKET_NAME }}/images/
+          aws s3 cp --recursive styles/ s3://${{ secrets.BUCKET_NAME }}/styles/
